@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Arnaud Alinenou">
+<meta name="description" content="Étude de cas : faut-il investir 25 M€ dans Filtisac CI (BRVM) ? Mémo, modèle et analyse.">
+<title>Filtisac CI – Dossier d'investissement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Note d'analyse imprimée : colonne de repères à gauche, texte à droite, filets fins, aucun cadre arrondi */
+  --paper:#f6f5f2; --ink:#1a1c22; --soft:#646872; --rule:#d5d3cc;
+  --petrol:#0f4c5c; --plum:#7b2d4e; --sand:#c4b07c;
+  --display:"Spectral", "Iowan Old Style", Georgia, serif;
+  --body:"IBM Plex Sans", "Segoe UI", Helvetica, Arial, sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.page{max-width:1000px;margin:0 auto;padding:0 24px}
+a{color:var(--petrol);text-underline-offset:3px}
+a:focus-visible,button:focus-visible,td:focus-visible{outline:2px solid var(--petrol);outline-offset:2px}
+h1,h2{font-family:var(--display);font-weight:500;margin:0;text-wrap:balance}
+p{margin:0}
+.num,table{font-variant-numeric:tabular-nums}
+.label{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);font-weight:500}
+
+.mast{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:18px 0;border-bottom:1px solid var(--ink)}
+.mast span:first-child{color:var(--ink)}
+
+.open{padding:56px 0 48px}
+.open h1{font-size:clamp(2.1rem,5vw,3.4rem);line-height:1.08;letter-spacing:-.01em;max-width:20ch;margin-top:18px}
+.open h1 em{font-style:italic;color:var(--petrol)}
+.stand{font-family:var(--display);font-size:1.22rem;line-height:1.5;max-width:58ch;margin-top:22px}
+.author{margin-top:22px;color:var(--soft);font-size:.92rem}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{text-decoration:none;display:inline-block;font:inherit;font-size:.92rem;font-weight:500;padding:11px 18px;border:1px solid var(--petrol);border-radius:0;cursor:pointer;background:var(--petrol);color:var(--paper)}
+.btn.alt{background:transparent;color:var(--petrol)}
+.btn:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.status{font-size:.82rem;color:var(--soft);margin-top:10px;min-height:1.3em}
+
+.row{display:grid;grid-template-columns:190px 1fr;gap:32px;padding:36px 0;border-top:1px solid var(--rule)}
+.row>.label{padding-top:6px}
+.row h2{font-size:1.6rem;line-height:1.2;margin-bottom:14px;max-width:30ch}
+.row p.txt{max-width:64ch}
+.row p.txt+p.txt{margin-top:10px}
+.note{font-size:.82rem;color:var(--soft);margin-top:12px;max-width:70ch}
+
+.verdict{border-top:3px solid var(--plum)}
+.verdict .label{color:var(--plum)}
+.verdict h2{font-size:2rem}
+
+table{border-collapse:collapse;width:100%}
+th,td{text-align:left;padding:10px 12px 10px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);font-weight:500;border-bottom:1px solid var(--ink)}
+td.r,th.r{text-align:right;padding-right:0;padding-left:12px}
+.scroll{overflow-x:auto}
+
+.figs{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--ink);border-bottom:1px solid var(--ink)}
+.figs div{padding:18px 16px 18px 0}
+.figs div+div{border-left:1px solid var(--rule);padding-left:16px}
+.figs b{display:block;font-family:var(--display);font-weight:500;font-size:2rem;line-height:1.1}
+.figs span{display:block;font-size:.84rem;color:var(--soft);margin-top:6px}
+
+.when{white-space:nowrap;color:var(--petrol);font-weight:500;width:130px}
+.neg{color:var(--plum);font-weight:600}
+.key td{font-weight:600;border-bottom:1px solid var(--ink)}
+.state{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;white-space:nowrap}
+.state.ok{color:var(--petrol)} .state.wait{color:#8a7430} .state.no{color:var(--plum)}
+
+.heat{width:auto;border-collapse:separate;border-spacing:3px}
+.heat th,.heat td{border:0;padding:0}
+.heat thead th,.heat tbody th{font-size:.78rem;letter-spacing:0;text-transform:none;color:var(--soft);font-weight:500;padding:4px 10px 4px 0;border:0}
+.heat td{width:92px;height:46px;text-align:center;font-size:.9rem;font-weight:500;cursor:default}
+.heat td:hover{outline:1px solid var(--ink)}
+.readout{margin-top:14px;min-height:3.2em;max-width:64ch}
+
+ol.plain{margin:0;padding-left:1.2em;max-width:64ch}
+ol.plain li{padding:4px 0}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.cols h3{font-family:var(--body);font-size:.95rem;font-weight:600;margin:0 0 8px}
+dl{margin:0;display:grid;grid-template-columns:150px 1fr}
+dt,dd{margin:0;padding:10px 0;border-bottom:1px solid var(--rule)}
+dt{color:var(--soft);font-size:.9rem}
+
+footer{border-top:1px solid var(--ink);margin-top:8px;padding:24px 0 56px;font-size:.84rem;color:var(--soft)}
+footer ol{margin:12px 0 0;padding-left:1.4em;columns:2;column-gap:36px}
+footer li{break-inside:avoid;padding:2px 0}
+
+@media (max-width:760px){
+  .row{grid-template-columns:1fr;gap:10px;padding:28px 0}
+  .figs{grid-template-columns:1fr 1fr}
+  .figs div:nth-child(3){border-left:0;padding-left:0}
+  .figs div:nth-child(n+3){border-top:1px solid var(--rule)}
+  .cols{grid-template-columns:1fr;gap:24px}
+  dl{grid-template-columns:1fr} dt{border-bottom:0;padding-bottom:0}
+  footer ol{columns:1}
+  .heat td{width:58px;height:40px;font-size:.78rem}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="mast label"><span>Dossier d'investissement</span><span>Étude de cas indépendante · Novembre 2026</span></div>
+
+<header class="open">
+  <div class="label">Filtisac CI · BRVM : FTSC · Emballages, Côte d'Ivoire</div>
+  <h1>Faut-il investir 25&nbsp;M€ dans Filtisac&nbsp;? <em>Non, pas à ce prix.</em></h1>
+  <p class="stand">Simulation d'une prise de participation minoritaire par un fonds de capital de croissance dans le fabricant ivoirien de sacs en jute et en polymère. L'analyse part des comptes SYSCOHADA 2020-2025 et projette trois scénarios jusqu'en 2031.</p>
+  <p class="author">Arnaud Alinenou · Master in International Management, Africa Business School (UM6P)</p>
+  <div class="actions">
+    <a class="btn" href="Memo_Filtisac_Alinenou.pdf" download>Télécharger le mémo (PDF)</a>
+    <a class="btn alt" href="Modele_Filtisac_Alinenou.xlsx" download>Télécharger le modèle (Excel)</a>
+  </div>
+  </header>
+
+<section class="row verdict">
+  <div class="label">Recommandation</div>
+  <div>
+    <h2>Ne pas investir aux conditions étudiées</h2>
+    <p class="txt">Une augmentation de capital réservée de 16,4 Mds FCFA à 1 360 FCFA par action donnerait au fonds 46 % du capital. Le fonds perd toute sa mise dans les scénarios bas et central, et la moitié dans le scénario haut. Un rendement annuel de 20 % reste hors d'atteinte, même en détenant 100 % du capital.</p>
+    <p class="txt">L'entreprise grandit, mais sa rentabilité ne couvre pas le coût de l'argent qu'elle immobilise.</p>
+  </div>
+</section>
+
+<div class="figs num">
+  <div><b>4,7&nbsp;%</b><span>marge d'EBE en 2025. Les pairs sud-africains sont entre 11 et 17 %.</span></div>
+  <div><b>259 jours</b><span>de chiffre d'affaires immobilisés en besoin en fonds de roulement.</span></div>
+  <div><b>3&nbsp;% / 10,7&nbsp;%</b><span>rentabilité des capitaux en 2031, face au coût du capital.</span></div>
+  <div><b>28,2 Mds</b><span>FCFA distribués aux actionnaires en 2025.</span></div>
+</div>
+
+<section class="row">
+  <div class="label">Contexte</div>
+  <div>
+    <h2>Trois ans qui ont vidé le bilan</h2>
+    <table>
+      <tbody>
+        <tr><td class="when">31 déc. 2024</td><td>Cession des filiales Chimtec, Ivoire Coton et Cofisac. Plus-value exceptionnelle de 18,9 Mds FCFA.</td></tr>
+        <tr><td class="when">2025</td><td>Distribution de 28,2 Mds FCFA, soit 2 000,67 FCFA par action. La trésorerie nette passe de +18,8 à −11,5 Mds.</td></tr>
+        <tr><td class="when">2026</td><td>Fermeture de la filature. Le fil de jute est désormais acheté ; 84 postes supprimés selon un syndicat.</td></tr>
+        <tr><td class="when">Fin sept. 2026</td><td>Chiffre d'affaires de 25,7 Mds (+40 %), mais résultat net de −0,35 Md : la croissance est financée par découvert.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="row">
+  <div class="label">Rentabilité</div>
+  <div>
+    <h2>Une marge loin de celle des pairs</h2>
+    <div class="scroll" id="chart"></div>
+    <p class="note">Marge d'EBE publiée, états financiers SYSCOHADA 2020-2025 [1]. Mpact au 28/09/2026 [6], Nampak au 25/09/2026 [7].</p>
+  </div>
+</section>
+
+<section class="row">
+  <div class="label">Rendement du fonds</div>
+  <div>
+    <h2>Trois scénarios, un même verdict</h2>
+    <div class="scroll">
+    <table>
+      <thead><tr><th>Mds FCFA</th><th class="r">Bas</th><th class="r">Central</th><th class="r">Haut</th></tr></thead>
+      <tbody>
+        <tr><td>EBITDA 2026</td><td class="r">−1,0</td><td class="r">0,6</td><td class="r">2,3</td></tr>
+        <tr><td>EBITDA 2031</td><td class="r">1,7</td><td class="r">3,5</td><td class="r">5,4</td></tr>
+        <tr><td>Dette nette 2031</td><td class="r">34,9</td><td class="r">21,1</td><td class="r">11,1</td></tr>
+        <tr><td>Valeur d'entreprise par DCF</td><td class="r">−17,3</td><td class="r">−8,7</td><td class="r">1,0</td></tr>
+        <tr><td>Fonds propres à la sortie</td><td class="r">négatifs</td><td class="r">≈ 0</td><td class="r">21,1</td></tr>
+        <tr class="key"><td>Multiple sur capital investi</td><td class="r neg">0,0x</td><td class="r neg">0,0x</td><td class="r neg">0,5x</td></tr>
+        <tr class="key"><td>TRI sur 5 ans</td><td class="r neg">−100 %</td><td class="r neg">−100 %</td><td class="r neg">−12 %</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="note">Ticket de 25 M€ (16,4 Mds FCFA) à 1 360 FCFA par action, soit le cours moins 20 %. Sortie fin 2031 à 6,0x l'EBITDA, décote de bloc de 10 %. Les scénarios diffèrent par la part récurrente des « autres produits » (0, 50, 100 %), le BFR (260, 220, 190 jours) et la marge visée en 2031 (4, 6,5, 8 %).</p>
+  </div>
+</section>
+
+<section class="row">
+  <div class="label">Sensibilité</div>
+  <div>
+    <h2>Le meilleur cas reste négatif</h2>
+    <p class="txt">TRI du fonds selon la marge d'EBITDA atteinte en 2031 et le BFR, en scénario central. Chaque case est une simulation complète du modèle.</p>
+    <div class="scroll" style="margin-top:16px"><table class="heat" id="heat" aria-label="TRI selon la marge d'EBITDA et le BFR"></table></div>
+    <p class="readout" id="readout" role="status">À 11 % de marge et 150 jours de BFR, le TRI est encore de −2 %. Atteindre 20 % demanderait environ 14 % de marge et une dette nulle.</p>
+  </div>
+</section>
+
+<section class="row">
+  <div class="label">Thèse</div>
+  <div>
+    <h2>Trois arguments mis à l'épreuve</h2>
+    <table>
+      <tbody>
+        <tr><td><strong>Ancrage sur l'emballage agricole ivoirien.</strong> Filtisac capte la reprise du cacao : chiffre d'affaires en hausse de 40 % à fin septembre 2026.</td><td class="r"><span class="state ok">Confirmé</span></td></tr>
+        <tr><td><strong>Le polymère améliore les marges.</strong> Aucune donnée par activité n'est publiée. La marge du groupe a varié de 1,5 à 7,8 % sur six ans.</td><td class="r"><span class="state wait">À prouver</span></td></tr>
+        <tr><td><strong>L'apport finance un redéploiement rentable.</strong> Malgré 16,4 Mds apportés, la dette nette reste proche de 21 Mds en 2031 : chaque milliard de ventes immobilise environ 0,6 Md de BFR.</td><td class="r"><span class="state no">Invalidé</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="row">
+  <div class="label">Suite</div>
+  <div class="cols">
+    <div>
+      <h3>Rouvrir le dossier si</h3>
+      <ol class="plain">
+        <li>au moins 2 Mds FCFA d'« autres produits » sont récurrents ;</li>
+        <li>le BFR d'exploitation réel passe sous 150 jours ;</li>
+        <li>un plan crédible mène à 10 % de marge d'EBITDA.</li>
+      </ol>
+      <p class="note">Même alors, un instrument protégé (obligation convertible, actions de préférence) serait préférable.</p>
+    </div>
+    <div>
+      <h3>À vérifier en due diligence</h3>
+      <ol class="plain">
+        <li>Nature des « autres produits » : 2,7 Mds en 2025.</li>
+        <li>Détail des 18,8 Mds de créances.</li>
+        <li>Ventes et marge par activité.</li>
+        <li>Coût réel de la fermeture de la filature.</li>
+        <li>Intentions de l'AKFED face à la dilution.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="row">
+  <div class="label">Méthode</div>
+  <div>
+    <dl>
+      <dt>Données</dt><dd>États financiers SYSCOHADA 2020-2025 et rapport du 3e trimestre 2026 [1]. Soldes recalculés et rapprochés des soldes publiés.</dd>
+      <dt>Retraitements</dt><dd>Plus-value de 2024 et dividendes des filiales cédées exclus. « Autres produits » testés à 0, 50 et 100 %.</dd>
+      <dt>Coût du capital</dt><dd>10,7 %. Emprunt d'État ivoirien à 7 ans à 7,18 % [5], prime de risque pays de Damodaran [4], bêta sectoriel de 0,58, prime de taille de 2 %.</dd>
+      <dt>Valorisation</dt><dd>Flux actualisés 2027-2031 et multiples de 4,0x à 6,2x l'EBITDA [6][7].</dd>
+      <dt>Modèle</dt><dd>Classeur Excel de 8 onglets, scénario modifiable en une cellule.</dd>
+    </dl>
+  </div>
+</section>
+
+<footer>
+  <p>Étude de cas académique fondée sur des informations publiques. Elle ne constitue pas un conseil en investissement et n'a aucun lien avec Filtisac, ses actionnaires ou un fonds d'investissement.</p>
+  <ol>
+    <li><a href="https://www.brvm.org/fr/rapports-societe-cotes/filtisac-ci">BRVM, rapports Filtisac CI</a></li>
+    <li><a href="https://www.sikafinance.com/marches/societe/FTSC.ci">Sikafinance, actionnariat</a></li>
+    <li><a href="https://www.lemondedudroit.fr/deals/97160-lpa-law-a-conseille-filtisac-dans-la-cession-de-sa-participation-au-capital-de-la-societe-chimtec-au-groupe-optimus-holding.html">Le Monde du Droit, cession de Chimtec</a></li>
+    <li><a href="https://pages.stern.nyu.edu/adamodar/New_Home_Page/datafile/ctryprem.html">Damodaran, primes de risque pays</a></li>
+    <li><a href="https://www.financialafrik.com/2026/10/21/la-cote-divoire-adjuge-93499-milliards-fcfa-de-bons-et-obligations-du-tresor/">Financial Afrik, adjudication du 20/10/2026</a></li>
+    <li><a href="https://www.marketscreener.com/quote/stock/MPACT-LIMITED-8759150/valuation/">MarketScreener, Mpact</a></li>
+    <li><a href="https://multiples.vc/public-comps/nampak-valuation-multiples">multiples.vc, Nampak</a></li>
+    <li><a href="https://dabafinance.com/fr/nouvelles/filtisac-shuts-spinning-unit-profit-falls">Daba Finance, fermeture de la filature</a></li>
+  </ol>
+</footer>
+</div>
+
+<script>
+(function(){
+  var fr=function(v){return String(v).replace('.',',').replace('-','−');};
+  /* Graphique */
+  var yrs=[["2020",4.2],["2021",1.6],["2022",2.5],["2023",7.8],["2024",1.5],["2025",4.7]], refs=[["Nampak",17.3],["Mpact",10.9]];
+  var W=720,H=300,L=44,T=16,PW=500,PH=230,max=20,y=function(v){return T+PH-v/max*PH;},band=PW/yrs.length;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;min-width:520px;font-family:var(--body)" role="img" aria-label="Marge d EBE de Filtisac de 2020 à 2025, comparée à Mpact et Nampak">';
+  [0,5,10,15,20].forEach(function(t){s+='<line x1="'+L+'" x2="'+(L+PW)+'" y1="'+y(t)+'" y2="'+y(t)+'" stroke="var(--rule)"/><text x="'+(L-8)+'" y="'+(y(t)+4)+'" text-anchor="end" font-size="12" fill="var(--soft)">'+t+' %</text>';});
+  refs.forEach(function(r){s+='<line x1="'+L+'" x2="'+(L+PW)+'" y1="'+y(r[1])+'" y2="'+y(r[1])+'" stroke="var(--plum)" stroke-dasharray="2 4"/><text x="'+(L+PW+10)+'" y="'+(y(r[1])+4)+'" font-size="13" fill="var(--plum)">'+r[0]+' '+fr(r[1])+' %</text>';});
+  yrs.forEach(function(d,i){var x=L+i*band+band*0.24,w=band*0.52;
+    s+='<rect x="'+x+'" y="'+y(d[1])+'" width="'+w+'" height="'+(T+PH-y(d[1]))+'" fill="'+(d[1]===7.8?'var(--petrol)':'var(--sand)')+'"><title>'+d[0]+' : '+fr(d[1])+' %</title></rect>';
+    s+='<text x="'+(x+w/2)+'" y="'+(y(d[1])-7)+'" text-anchor="middle" font-size="13" font-weight="500" fill="var(--ink)">'+fr(d[1])+' %</text><text x="'+(x+w/2)+'" y="'+(T+PH+20)+'" text-anchor="middle" font-size="12" fill="var(--soft)">'+d[0]+'</text>';});
+  s+='<line x1="'+L+'" x2="'+(L+PW)+'" y1="'+y(0)+'" y2="'+y(0)+'" stroke="var(--ink)"/></svg>';
+  document.getElementById('chart').innerHTML=s;
+
+  /* Sensibilité */
+  var bfr=[150,175,200,220,260],mg=[5,6.5,8,9.5,11];
+  var irr=[[-30,-48,-100,-100,-100],[-19,-25,-37,-100,-100],[-12,-16,-22,-28,-100],[-6,-10,-14,-18,-29],[-2,-5,-8,-11,-19]];
+  var h='<thead><tr><th scope="col">Marge \\ BFR</th>'+bfr.map(function(b){return '<th scope="col" style="text-align:center;padding:4px 0">'+b+' j</th>';}).join('')+'</tr></thead><tbody>';
+  irr.forEach(function(row,i){h+='<tr><th scope="row">'+fr(mg[i])+' %</th>';
+    row.forEach(function(v,j){var a=Math.round((Math.min(1,Math.abs(v)/55)*0.82+0.08)*100);
+      h+='<td tabindex="0" data-m="'+mg[i]+'" data-b="'+bfr[j]+'" data-v="'+v+'" style="background:color-mix(in srgb,var(--plum) '+a+'%,var(--paper));color:'+(a>48?'var(--paper)':'var(--ink)')+'">'+fr(v)+' %</td>';});
+    h+='</tr>';});
+  var tb=document.getElementById('heat');tb.innerHTML=h+'</tbody>';
+  var ro=document.getElementById('readout'),def=ro.textContent;
+  function ex(td){var v=+td.dataset.v;ro.textContent='Marge de '+fr(td.dataset.m)+' % et BFR de '+td.dataset.b+' jours : '+(v===-100?'les fonds propres sont nuls à la sortie, le fonds perd toute sa mise.':'TRI de '+fr(v)+' % par an sur 5 ans.');}
+  tb.querySelectorAll('td').forEach(function(td){td.addEventListener('mouseenter',function(){ex(td);});td.addEventListener('focus',function(){ex(td);});});
+  tb.addEventListener('mouseleave',function(){ro.textContent=def;});
+
+})();
+</script>
+</body>
+</html>
